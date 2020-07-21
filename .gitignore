@@ -1,2 +1,9 @@
 *.cfg
 venv/*
+*.yml
+*.png
+*.in
+*.iml
+*.txt
+*.rst
+*.xml
