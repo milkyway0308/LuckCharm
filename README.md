@@ -36,9 +36,6 @@ LuckCharmRefinery/Finance_RefinedData.csv을 다운받아 최종 학습용 데�
 #### 구조가 더럽다. 발로 짠건가?
 네.
 <br><br>
-#### 패키지 네이밍 상태가 이상한데?
-아름답군요.
-<br><br>
 #### 믿어도 되는가?
 아니요. 왜 이름이 부적이겠나요?
 <br><br>
