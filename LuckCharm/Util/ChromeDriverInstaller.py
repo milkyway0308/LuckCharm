@@ -3,12 +3,10 @@ import os
 from LuckCharm.Util.VersionParser import getVersion
 import requests
 from bs4 import BeautifulSoup as bs
-from time import sleep
 import tempfile
 import shutil
 import zipfile
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from LuckCharm.Util.WeNeedMoreMineral import elevate
 from selenium.webdriver.chrome.options import Options
 
@@ -31,7 +29,6 @@ def chrome():
 
 def checkChromeDriver(chromeDriverFile):
     print("Checking for Chrome on default root")
-    sleep(1)
     if not os.path.isfile(ChromeDirectory.chromeDir):
         ChromeDirectory.chromeDir = input(
             "Chrome not installed on default directory. Please enter chrome directory manually.\nChrome directory: ")
@@ -44,19 +41,16 @@ def checkChromeDriver(chromeDriverFile):
         if not os.path.isfile(ChromeDirectory.chromeDir):
             raise FileNotFoundError("Error: Chrome not installed")
     print("Checking for ChromeDriver..")
-    sleep(1)
     realDriver = chromeDriverFile + "/chromedriver.exe"
     if os.path.isfile(realDriver):
         print("...ChromeDriver found.")
         print("Checking for ChromeDriver version")
-        sleep(0.6)
         opt = Options()
         opt.headless = True
         chr = webdriver.Chrome(realDriver, options=opt)
         cVer = list(int(x) for x in chr.capabilities['chrome']['chromedriverVersion'].split(" ")[0].split("."))
         chr.close()
         print("...ChromeDriver version: " + ".".join(str(e) for e in cVer))
-        sleep(0.5)
         print("Checking for Chrome version")
         chVer = getVersion(ChromeDirectory.chromeDir)
         print("...Chrome version: " + ".".join(str(e) for e in chVer))
