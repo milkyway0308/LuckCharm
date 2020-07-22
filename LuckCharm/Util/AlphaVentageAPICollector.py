@@ -95,11 +95,13 @@ def collectNext():
         va = sel.find_element_by_id("talk")
         txt = va.text
     sel.close()
-    print(txt)
+    # print(txt)
     if "Welcome" in txt:
         txt = txt.split("!")[1].split(".")[0].split(" ")[-1]
     else:
-        print(txt)
+        if "redundant" in txt:
+            raise ValueError("Error: IP blocked. Requires new ip")
+        # print(txt)
         print("Failed to get key, retry...")
         return collectNext()
     return txt
@@ -130,8 +132,70 @@ class AlphaVentageAPIPool:
         self._currentPool.append(newOne)
         return newOne
 
-    def write(self, file):
-        file.write()
+    total = 0
+
+    def collectAll(self, fileName):
+        self.total = 0
+        with open(fileName, "a") as fl:
+            try:
+                while True:
+                    key = collectNext()
+                    self.total += 1
+                    print("Collected " + key + "(" + str(self.total) + " keys collected)")
+                    fl.write(key + "\n")
+                    fl.flush()
+            except ValueError as e:
+                print("Exception occurred: " + str(e))
+            except Exception as e:
+                print("Unknown error occured: " + str(type(e)))
+            next = input("Continue? (Y/N) ")
+            if next is "Y":
+                self.collectAll(fileName)
+            else:
+                print("Finising key collecting...")
+                fl.close()
+
+    @staticmethod
+    def convertToTimerCSV(fileName):
+        import csv
+
+        print("Converting to timer..")
+        x = str(fileName)
+        if x.index(".") != -1:
+            ind = x.index(".")
+            x = x[0:ind]
+        x += ".csv"
+        import os.path
+        exists = os.path.isfile(x)
+
+        with open(fileName, "rt") as original:
+            with open(x, "at", newline='') as file:
+                wr = csv.writer(file)
+                if not exists:
+                    wr.writerow(("LuckCharm", "Key", "TimeStamp"))
+                    # file.write("AlphaVentageCollectors,Key,TimeStamp")
+                for x in original.readlines():
+                    wr.writerow(("//", str(x[:len(x) - 1]), "0"))
+
+    @staticmethod
+    def load(fileName):
+        pool = AlphaVentageAPIPool()
+        import csv
+        with open(fileName, "rt") as f:
+            cs = csv.reader(f)
+            skip = True
+            for x in cs:
+                if skip:
+                    skip = False
+                    continue
+                pool.appendKey(x[1], int(x[2]))
+        print(str(len(pool._currentPool)) + " keys loaded")
+        return pool
+
+    def appendKey(self, key, timestamp):
+        k = AlphaVentageAPIKey(key)
+        k._lastKeyInit = timestamp
+        self._currentPool.append(k)
 
 
 class AlphaVentageAPIKey:
@@ -165,8 +229,7 @@ class AlphaVentageAPIKey:
 
 
 if __name__ == '__main__':
-    pool = AlphaVentageAPIPool()
-    for x in range(1, 17):
-        print("Loop.")
-        key = pool.getLastFreeKey()
-        key.use()
+    # pool = AlphaVentageAPIPool()
+    # pool.collectAll("alphaKeys.txt")
+    # AlphaVentageAPIPool.convertToTimerCSV("alphaKeys.txt")
+    AlphaVentageAPIPool.load("alphaKeys.csv")
