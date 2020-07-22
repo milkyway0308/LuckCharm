@@ -10,6 +10,7 @@ import zipfile
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from LuckCharm.Util.WeNeedMoreMineral import elevate
+from selenium.webdriver.chrome.options import Options
 
 
 class ChromeDirectory:
@@ -23,7 +24,9 @@ def chrome():
         elevate()
         checkChromeDriver(ChromeDirectory.chromeDriverDir)
         ChromeDirectory.initialize = True
-    return webdriver.Chrome(ChromeDirectory.chromeDriverDir + "chromedriver.exe")
+    opt = Options()
+    opt.headless = True
+    return webdriver.Chrome(ChromeDirectory.chromeDriverDir + "chromedriver.exe", options=opt)
 
 
 def checkChromeDriver(chromeDriverFile):
